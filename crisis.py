@@ -4,6 +4,7 @@
 
 from tkinter import *
 import random
+import time
 
 #Function called whenever question is selected, and at the beginning :)
 def randomize_bg():
@@ -50,20 +51,20 @@ ran_color=hex(random.randint(0, 16777215))
 
 question = [
     #["Question", "Answer", "Is completed"]
-    ["Example 1.", "Réponse 1", False],
-    ["Example 2.", "Réponse 2", False],
-    ["Example 3.", "Réponse 3", False],
-    ["Example 4.", "Réponse 4", False],
-    ["Example 5.", "Réponse 5", False],
-    ["Example 6.", "Réponse 6", False],
-    ["Example 7.", "Réponse 7", False],
-    ["Example 8.", "Réponse 8", False],
-    ["Example 9.", "Réponse 9", False]
+    ["Exemple 1.", "Réponse 1", False],
+    ["Exemple 2.", "Réponse 2", False],
+    ["Exemple 3.", "Réponse 3", False],
+    ["Exemple 4.", "Réponse 4", False],
+    ["Exemple 5.", "Réponse 5", False],
+    ["Exemple 6.", "Réponse 6", False],
+    ["Exemple 7.", "Réponse 7", False],
+    ["Exemple 8.", "Réponse 8", False],
+    ["Exemple 9.", "Réponse 9", False]
 ]
 
 question_btn = [None] * len(question)
 
-#Create the windows
+#Create the window
 win = Tk()
 #Make the win fullscreen
 win.attributes("-fullscreen", True)
@@ -71,6 +72,43 @@ win.attributes("-fullscreen", True)
 #Create the window that will contain the progress bar
 progress = Tk()
 progress.configure(bg="black")
+progress.attributes("-fullscreen", True)
+
+#Create the canva for the gradient and the bar
+progress_cnv = Canvas(
+    progress,
+    bg="red"
+)
+progress_cnv.place(
+    relx=0.5,
+    rely=0.1,
+    relw=0.95,
+    relh=0.05,
+    anchor=CENTER
+)
+
+progress.update()
+
+progress_cnv_w = progress_cnv.winfo_width()
+progress_cnv_h = progress_cnv.winfo_height()
+
+print(progress_cnv_w)
+print(progress_cnv_h)
+
+progress_rect = [None] * len(question)
+
+list_colors = ["green", "blue", "cyan", "black", "grey", "green", "blue", "cyan", "black", "grey"]
+
+for i in range(len(question)):
+    print(int(progress_cnv_w/len(question)))
+    progress_rect[i] = progress_cnv.create_rectangle(
+        i*int(progress_cnv_w/len(question)),
+        0,
+        int(progress_cnv_w/len(question)),
+        progress_cnv_h-2,
+        fill=list_colors[i]
+    )
+#progress_cnv.create_rectangle(1, 1, int(progress_cnv.winfo_width()/len(question)), progress_cnv.winfo_height()-2, fill="green");
 
 #The current selected question
 current_num = 0
@@ -98,7 +136,7 @@ question_lbl = Label(
 )
 question_lbl.pack(
     side=TOP,
-    pady=(200, 0)
+    pady=(150, 0)
 )
 
 #Element that shows Correcte or Faux
