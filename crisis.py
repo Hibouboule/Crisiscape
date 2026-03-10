@@ -18,6 +18,7 @@ def randomize_bg():
     button_frm.config(bg="#"+ran_color[2:].zfill(6))
     answer_frm.config(bg="#"+ran_color[2:].zfill(6))
     validate_btn.config(highlightbackground="#"+ran_color[2:].zfill(6))
+    result_lbl.config(bg="#"+ran_color[2:].zfill(6))
 
 #Validate the answer to the question
 def validate():
@@ -25,6 +26,7 @@ def validate():
     global current_str
     if answer_ent.get().casefold() == questions[current_num].answer.casefold():
         questions[current_num].completed=True
+        result_lbl.config(text=questions[current_num].result)
         validate_str.set("Correct")
         validate_lbl.config(fg="darkgreen")
         validate_btn.config(state="disabled")
@@ -42,11 +44,13 @@ def switch(num):
     validate_str.set("")
     answer_ent.delete(0, END)
     randomize_bg()
-    #Enable or disable the validate button
+    #Enable or disable the validate button and the result label
     if questions[current_num].completed == True:
         validate_btn.config(state="disabled")
+        result_lbl.config(text=questions[current_num].result)
     else:
         validate_btn.config(state="active")
+        result_lbl.config(text="")
 
 ran_color=hex(random.randint(0, 16777215))
 
@@ -197,6 +201,16 @@ validate_btn.pack(
     padx=(10, 20)
 )
 
+#Label for the question result
+result_lbl = Label(
+    win,
+    text="",
+    bg="#"+ran_color[2:].zfill(6),
+    font=("Helvetica, 24 italic"),
+    anchor="center"
+)
+result_lbl.pack()
+
 #Generate question selection button
 for i in range(len(questions)):
     question_btn[i] = Button(
@@ -218,7 +232,7 @@ for i in range(len(questions)):
     )
 
 randomize_bg()
-            
+print(questions[0].result)
 #The mainloop idk
 win.mainloop()
 #progress.mainloop()
