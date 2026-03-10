@@ -40,7 +40,11 @@ def switch(num):
     global current_str
     global current_num
     current_str.set(questions[num].question_str)
+    question_btn[current_num].config(state="normal")
+    question_btn[current_num].config(relief=RAISED)
     current_num = num
+    question_btn[current_num].config(state="disabled")
+    question_btn[current_num].config(relief=SUNKEN)
     validate_str.set("")
     answer_ent.delete(0, END)
     randomize_bg()
@@ -121,7 +125,7 @@ for i in range(len(question)):
 current_num = 0
 current_str = StringVar(win, questions[0].question_str)
 
-valid_img = PhotoImage(file="valid1.png")
+valid_img = PhotoImage(file="valid.png")
 
 #The Correct or Faux string
 validate_str = StringVar(win, "")
@@ -193,7 +197,7 @@ validate_btn = Button(
     activebackground="red",
     highlightbackground="#"+ran_color[2:].zfill(6),
     command=validate,
-    state="active"
+    state="normal"
 )
 validate_btn.pack(
     side=RIGHT,
@@ -218,6 +222,7 @@ for i in range(len(questions)):
         text=str(i+1),
         font="Arial, 25 bold",
         bg="darkorange",
+        relief=RAISED,
         activebackground="yellow",
         command=lambda i=i: switch(i),
         width=3,
