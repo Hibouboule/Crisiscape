@@ -4,7 +4,6 @@
 
 from tkinter import *
 import random
-import time
 import json
 
 #Function called whenever question is selected, and at the beginning :)
@@ -12,13 +11,14 @@ def randomize_bg():
     global ran_color
     #the hell is this built-in function
     ran_color=hex(random.randint(0, 4194303))
-    win.configure(bg="#"+ran_color[2:].zfill(6))
-    question_lbl.config(bg="#"+ran_color[2:].zfill(6))
-    validate_lbl.config(bg="#"+ran_color[2:].zfill(6))
-    button_frm.config(bg="#"+ran_color[2:].zfill(6))
-    answer_frm.config(bg="#"+ran_color[2:].zfill(6))
-    validate_btn.config(highlightbackground="#"+ran_color[2:].zfill(6))
-    result_lbl.config(bg="#"+ran_color[2:].zfill(6))
+    background_color = "#" + ran_color[2:].zfill(6)
+    win.configure(bg=background_color)
+    question_lbl.config(bg=background_color)
+    validate_lbl.config(bg=background_color)
+    button_frm.config(bg=background_color)
+    answer_frm.config(bg=background_color)
+    validate_btn.config(highlightbackground=background_color)
+    result_lbl.config(bg=background_color)
 
 #Validate the answer to the question
 def validate():
@@ -45,7 +45,7 @@ def switch(num):
     answer_ent.delete(0, END)
     randomize_bg()
     #Enable or disable the validate button and the result label
-    if questions[current_num].completed == True:
+    if questions[current_num].completed:
         validate_btn.config(state="disabled")
         result_lbl.config(text=questions[current_num].result)
     else:
@@ -61,7 +61,7 @@ class Question:
         self.result = result
         self.completed = False
 
-#Case insensitive btw :3c
+#Case-insensitive btw :3c
 questions = []
 with open("questions.json", "r", encoding="utf-8") as file:
         question_data = json.load(file)
@@ -138,7 +138,7 @@ question_lbl = Label(
     win,
     textvariable=current_str,
     bg="#"+ran_color[2:].zfill(6),
-    font=("Helvetica, 30 bold"),
+    font="Helvetica, 30 bold",
     anchor="center"
 )
 question_lbl.pack(
@@ -151,7 +151,7 @@ validate_lbl = Label(
     win,
     textvariable=validate_str,
     bg="#"+ran_color[2:].zfill(6),
-    font=("Arial, 22 italic")
+    font="Arial, 22 italic"
 )
 validate_lbl.pack(
     side=TOP,
@@ -168,7 +168,7 @@ answer_frm.pack(side=TOP)
 #You can enter the answer here
 answer_ent = Entry(
     answer_frm,
-    font=("Arial, 22"),
+    font="Arial, 22",
     justify=CENTER,
     fg="white",
     bg="black",
@@ -186,7 +186,7 @@ validate_btn = Button(
     answer_frm,
     #text="Valider",
     image=valid_img,
-    font=("Arial, 26"),
+    font="Arial, 26",
     relief="ridge",
     borderwidth=7,
     bg="darkred",
@@ -206,7 +206,7 @@ result_lbl = Label(
     win,
     text="",
     bg="#"+ran_color[2:].zfill(6),
-    font=("Helvetica, 24 italic"),
+    font="Helvetica, 24 italic",
     anchor="center"
 )
 result_lbl.pack()
@@ -216,7 +216,7 @@ for i in range(len(questions)):
     question_btn[i] = Button(
         button_frm,
         text=str(i+1),
-        font=("Arial, 25 bold"),
+        font="Arial, 25 bold",
         bg="darkorange",
         activebackground="yellow",
         command=lambda i=i: switch(i),
