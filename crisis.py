@@ -53,7 +53,7 @@ def switch(num):
         validate_btn.config(state="disabled")
         result_lbl.config(text=questions[current_num].result)
     else:
-        validate_btn.config(state="active")
+        validate_btn.config(state="normal")
         result_lbl.config(text="")
 
 ran_color=hex(random.randint(0, 16777215))
