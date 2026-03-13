@@ -8,7 +8,6 @@ import json
 
 #Function called whenever question is selected, and at the beginning :)
 def randomize_bg():
-    global ran_color
     #the hell is this built-in function
     ran_color=hex(random.randint(0, 4194303))
     background_color = "#" + ran_color[2:].zfill(6)
@@ -24,9 +23,9 @@ def randomize_bg():
 def validate():
     global current_num
     global current_str
-    if answer_ent.get().casefold() == questions[current_num].answer.casefold():
-        questions[current_num].completed=True
-        result_lbl.config(text=questions[current_num].result)
+    if answer_ent.get().casefold() == questions[current_num]["answer"].casefold():
+        questions[current_num]["completed"]=True
+        result_lbl.config(text=questions[current_num]["result"])
         validate_str.set("Correct")
         validate_lbl.config(fg="darkgreen")
         validate_btn.config(state="disabled")
@@ -39,7 +38,7 @@ def validate():
 def switch(num):
     global current_str
     global current_num
-    current_str.set(questions[num].question_str)
+    current_str.set(questions[num]["question_str"])
     question_btn[current_num].config(state="normal")
     question_btn[current_num].config(relief=RAISED)
     current_num = num
@@ -49,81 +48,34 @@ def switch(num):
     answer_ent.delete(0, END)
     randomize_bg()
     #Enable or disable the validate button and the result label
-    if questions[current_num].completed:
+    if questions[current_num]["completed"]:
         validate_btn.config(state="disabled")
-        result_lbl.config(text=questions[current_num].result)
+        result_lbl.config(text=questions[current_num]["result"])
     else:
-        validate_btn.config(state="active")
+        validate_btn.config(state="normal")
         result_lbl.config(text="")
 
-ran_color=hex(random.randint(0, 16777215))
-
-class Question:
-    def __init__(self, question_str, answer, result):
-        self.question_str = question_str
-        self.answer = answer
-        self.result = result
-        self.completed = False
-
 #Case-insensitive btw :3c
-questions = []
 with open("questions.json", "r", encoding="utf-8") as file:
         question_data = json.load(file)
-        for i in range(len(question_data)):
-            questions.append(Question(question_data[i]["question_str"], question_data[i]["answer"], question_data[i]["result"]))
-
-question_btn = [None] * len(questions)
+        questions = [
+            {
+                "question_str": question["question_str"],
+                "answer": question["answer"],
+                "result": question["result"],
+                "completed": False,
+            }
+            for question in question_data
+        ]
 
 #Create the window
 win = Tk()
 #Make the win fullscreen
 win.attributes("-fullscreen", True)
 
-'''
-#Create the window that will contain the progress bar
-progress = Tk()
-progress.configure(bg="black")
-progress.attributes("-fullscreen", True)
-
-#Create the canva for the gradient and the bar
-progress_cnv = Canvas(
-    progress,
-    bg="red"
-)
-progress_cnv.place(
-    relx=0.5,
-    rely=0.1,
-    relw=0.95,
-    relh=0.05,
-    anchor=CENTER
-)
-
-progress.update()
-
-progress_cnv_w = progress_cnv.winfo_width()
-progress_cnv_h = progress_cnv.winfo_height()
-
-print(progress_cnv_w)
-print(progress_cnv_h)
-
-progress_rect = [None] * len(question)
-
-list_colors = ["green", "blue", "cyan", "black", "grey", "green", "blue", "cyan", "black", "grey"]
-
-for i in range(len(question)):
-    print(int(progress_cnv_w/len(question)))
-    progress_rect[i] = progress_cnv.create_rectangle(
-        i*int(progress_cnv_w/len(question)),
-        0,
-        int(progress_cnv_w/len(question)),
-        progress_cnv_h-2,
-        fill=list_colors[i]
-    )
-#progress_cnv.create_rectangle(1, 1, int(progress_cnv.winfo_width()/len(question)), progress_cnv.winfo_height()-2, fill="green");
-'''
 #The current selected question
 current_num = 0
-current_str = StringVar(win, questions[0].question_str)
+current_str = StringVar(win, questions[current_num]["question_str"])
 
 valid_img = PhotoImage(file="valid.png")
 
@@ -131,17 +83,13 @@ valid_img = PhotoImage(file="valid.png")
 validate_str = StringVar(win, "")
 
 #Container for all the question selection button
-button_frm = Frame(
-    win,
-    bg="#"+ran_color[2:].zfill(6)
-)
+button_frm = Frame(win)
 button_frm.pack(side=BOTTOM)
 
 #Element that shows the question
 question_lbl = Label(
     win,
     textvariable=current_str,
-    bg="#"+ran_color[2:].zfill(6),
     font="Helvetica, 30 bold",
     anchor="center"
 )
@@ -154,7 +102,6 @@ question_lbl.pack(
 validate_lbl = Label(
     win,
     textvariable=validate_str,
-    bg="#"+ran_color[2:].zfill(6),
     font="Arial, 22 italic"
 )
 validate_lbl.pack(
@@ -163,10 +110,7 @@ validate_lbl.pack(
 )
 
 #Container for the entry and the validate button
-answer_frm = Frame(
-    win,
-    bg="#"+ran_color[2:].zfill(6)
-)
+answer_frm = Frame(win)
 answer_frm.pack(side=TOP)
 
 #You can enter the answer here
@@ -188,14 +132,12 @@ answer_ent.pack(
 #Confirm the answer
 validate_btn = Button(
     answer_frm,
-    #text="Valider",
     image=valid_img,
     font="Arial, 26",
     relief="ridge",
     borderwidth=7,
     bg="darkred",
     activebackground="red",
-    highlightbackground="#"+ran_color[2:].zfill(6),
     command=validate,
     state="normal"
 )
@@ -209,15 +151,15 @@ validate_btn.pack(
 result_lbl = Label(
     win,
     text="",
-    bg="#"+ran_color[2:].zfill(6),
     font="Helvetica, 24 italic",
     anchor="center"
 )
 result_lbl.pack()
 
 #Generate question selection button
+question_btn = []
 for i in range(len(questions)):
-    question_btn[i] = Button(
+    question_btn.append(Button(
         button_frm,
         text=str(i+1),
         font="Arial, 25 bold",
@@ -229,7 +171,7 @@ for i in range(len(questions)):
         borderwidth=5,
         highlightbackground="black",
         highlightthickness=3
-    )
+    ))
     question_btn[i].pack(
         side=LEFT,
         padx=20,
