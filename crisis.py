@@ -233,7 +233,7 @@ completion_lbl.pack(
     pady=10
 )
 
-randomize_bg()
+switch(0)
 #The mainloop idk
 win.mainloop()
 progress.mainloop()
